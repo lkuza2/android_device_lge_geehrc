@@ -18,6 +18,8 @@
 #include <linux/types.h>
 #include <linux/fb.h>
 
+
+#define MSMFB_OVERLAY_COMMIT _IOW(MSMFB_IOCTL_MAGIC, 163, unsigned int)
 #define MSMFB_IOCTL_MAGIC 'm'
 #define MSMFB_GRP_DISP          _IOW(MSMFB_IOCTL_MAGIC, 1, unsigned int)
 #define MSMFB_BLIT              _IOW(MSMFB_IOCTL_MAGIC, 2, unsigned int)
