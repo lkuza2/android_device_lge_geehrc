@@ -34,6 +34,7 @@ TARGET_NO_HW_VSYNC := true
 
 # Try to build the kernel
 TARGET_KERNEL_CONFIG := geehrc_defconfig
+TARGET_KERNEL_CUSTOM_TOOLCHAIN := arm-eabi-4.4.3
 
 BOARD_USES_ALSA_AUDIO:= true
 BOARD_USES_FLUENCE_INCALL := true

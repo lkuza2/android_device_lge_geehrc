@@ -18,8 +18,6 @@
 #include <linux/types.h>
 #include <linux/fb.h>
 
-
-#define MSMFB_OVERLAY_COMMIT _IOW(MSMFB_IOCTL_MAGIC, 163, unsigned int)
 #define MSMFB_IOCTL_MAGIC 'm'
 #define MSMFB_GRP_DISP          _IOW(MSMFB_IOCTL_MAGIC, 1, unsigned int)
 #define MSMFB_BLIT              _IOW(MSMFB_IOCTL_MAGIC, 2, unsigned int)
@@ -30,16 +28,15 @@
 #define MSMFB_HISTOGRAM _IOWR(MSMFB_IOCTL_MAGIC, 132, struct mdp_histogram_data)
 /* new ioctls's for set/get ccs matrix */
 #define MSMFB_GET_CCS_MATRIX  _IOWR(MSMFB_IOCTL_MAGIC, 133, struct mdp_ccs)
-#ifndef CONFIG_FB_MSM_MDP40  /* Refer to kernel/drivers/video/msm/msm_fb.c */
 #define MSMFB_SET_CCS_MATRIX  _IOW(MSMFB_IOCTL_MAGIC, 134, struct mdp_ccs)
-#else
-#define MSMFB_SET_CCS_MATRIX  _IOW(MSMFB_IOCTL_MAGIC, 134, struct mdp_csc)
-#endif
 #define MSMFB_OVERLAY_SET       _IOWR(MSMFB_IOCTL_MAGIC, 135, \
 						struct mdp_overlay)
 #define MSMFB_OVERLAY_UNSET     _IOW(MSMFB_IOCTL_MAGIC, 136, unsigned int)
+
 #define MSMFB_OVERLAY_PLAY      _IOW(MSMFB_IOCTL_MAGIC, 137, \
 						struct msmfb_overlay_data)
+#define MSMFB_OVERLAY_QUEUE	MSMFB_OVERLAY_PLAY
+
 #define MSMFB_GET_PAGE_PROTECTION _IOR(MSMFB_IOCTL_MAGIC, 138, \
 					struct mdp_page_protection)
 #define MSMFB_SET_PAGE_PROTECTION _IOW(MSMFB_IOCTL_MAGIC, 139, \
@@ -71,6 +68,12 @@
 						struct msmfb_data)
 #define MSMFB_WRITEBACK_TERMINATE _IO(MSMFB_IOCTL_MAGIC, 155)
 #define MSMFB_MDP_PP _IOWR(MSMFB_IOCTL_MAGIC, 156, struct msmfb_mdp_pp)
+#define MSMFB_OVERLAY_VSYNC_CTRL _IOW(MSMFB_IOCTL_MAGIC, 160, unsigned int)
+#define MSMFB_VSYNC_CTRL  _IOW(MSMFB_IOCTL_MAGIC, 161, unsigned int)
+#define MSMFB_BUFFER_SYNC  _IOW(MSMFB_IOCTL_MAGIC, 162, struct mdp_buf_sync)
+#define MSMFB_OVERLAY_COMMIT      _IOW(MSMFB_IOCTL_MAGIC, 163, unsigned int)
+#define MSMFB_DISPLAY_COMMIT      _IOW(MSMFB_IOCTL_MAGIC, 164, \
+						struct mdp_display_commit)
 
 #define FB_TYPE_3D_PANEL 0x10101010
 #define MDP_IMGTYPE2_START 0x10000
@@ -92,6 +95,8 @@ enum {
 	MDP_YCRYCB_H2V1,  /* YCrYCb interleave */
 	MDP_Y_CRCB_H2V1,  /* Y and CrCb, pseduo planer w/ Cr is in MSB */
 	MDP_Y_CBCR_H2V1,   /* Y and CrCb, pseduo planer w/ Cr is in MSB */
+	MDP_Y_CRCB_H1V2,
+	MDP_Y_CBCR_H1V2,
 	MDP_RGBA_8888,    /* ARGB 888 */
 	MDP_BGRA_8888,	  /* ABGR 888 */
 	MDP_RGBX_8888,	  /* RGBX 888 */
@@ -104,9 +109,10 @@ enum {
 	MDP_Y_CBCR_H1V1,  /* Y and CbCr, pseduo planer w/ Cb is in MSB */
 	MDP_YCRCB_H1V1,   /* YCrCb interleave */
 	MDP_YCBCR_H1V1,   /* YCbCr interleave */
+	MDP_BGR_565,      /* BGR 565 planer */
 	MDP_IMGTYPE_LIMIT,
-	MDP_BGR_565 = MDP_IMGTYPE2_START,      /* BGR 565 planer */
-	MDP_FB_FORMAT,    /* framebuffer format */
+	MDP_RGB_BORDERFILL,	/* border fill pipe */
+	MDP_FB_FORMAT = MDP_IMGTYPE2_START,    /* framebuffer format */
 	MDP_IMGTYPE_LIMIT2 /* Non valid image type after this enum */
 };
 
@@ -122,6 +128,9 @@ enum {
 	HSIC_CON,
 	NUM_HSIC_PARAM,
 };
+
+#define MDSS_MDP_ROT_ONLY		0x80
+#define MDSS_MDP_RIGHT_MIXER		0x100
 
 /* mdp_blit_req flag values */
 #define MDP_ROT_NOP 0
@@ -148,7 +157,7 @@ enum {
 #define MDP_DEINTERLACE_ODD		0x00400000
 #define MDP_OV_PLAY_NOWAIT		0x00200000
 #define MDP_SOURCE_ROTATED_90		0x00100000
-#define MDP_DPP_HSIC			0x00080000
+#define MDP_OVERLAY_PP_CFG_EN		0x00080000
 #define MDP_BACKEND_COMPOSITION		0x00040000
 #define MDP_BORDERFILL_SUPPORTED	0x00010000
 #define MDP_SECURE_OVERLAY_SESSION      0x00008000
@@ -250,6 +259,7 @@ struct msmfb_overlay_data {
 	uint32_t version_key;
 	struct msmfb_data plane1_data;
 	struct msmfb_data plane2_data;
+	struct msmfb_data dst_data;
 };
 
 struct msmfb_img {
@@ -264,15 +274,47 @@ struct msmfb_writeback_data {
 	struct msmfb_img img;
 };
 
-struct dpp_ctrl {
-	/*
-	 *'sharp_strength' has inputs = -128 <-> 127
-	 *  Increasingly positive values correlate with increasingly sharper
-	 *  picture. Increasingly negative values correlate with increasingly
-	 *  smoothed picture.
-	 */
-	int8_t sharp_strength;
-	int8_t hsic_params[NUM_HSIC_PARAM];
+#define MDP_PP_OPS_READ 0x2
+#define MDP_PP_OPS_WRITE 0x4
+
+struct mdp_qseed_cfg {
+	uint32_t table_num;
+	uint32_t ops;
+	uint32_t len;
+	uint32_t *data;
+};
+
+struct mdp_qseed_cfg_data {
+	uint32_t block;
+	struct mdp_qseed_cfg qseed_data;
+};
+
+#define MDP_OVERLAY_PP_CSC_CFG      0x1
+#define MDP_OVERLAY_PP_QSEED_CFG    0x2
+
+#define MDP_CSC_FLAG_ENABLE	0x1
+#define MDP_CSC_FLAG_YUV_IN	0x2
+#define MDP_CSC_FLAG_YUV_OUT	0x4
+
+struct mdp_csc_cfg {
+	/* flags for enable CSC, toggling RGB,YUV input/output */
+	uint32_t flags;
+	uint32_t csc_mv[9];
+	uint32_t csc_pre_bv[3];
+	uint32_t csc_post_bv[3];
+	uint32_t csc_pre_lv[6];
+	uint32_t csc_post_lv[6];
+};
+
+struct mdp_csc_cfg_data {
+	uint32_t block;
+	struct mdp_csc_cfg csc_data;
+};
+
+struct mdp_overlay_pp_params {
+	uint32_t config_ops;
+	struct mdp_csc_cfg csc_cfg;
+	struct mdp_qseed_cfg qseed_cfg[2];
 };
 
 struct mdp_overlay {
@@ -286,7 +328,7 @@ struct mdp_overlay {
 	uint32_t flags;
 	uint32_t id;
 	uint32_t user_data[8];
-	struct dpp_ctrl dpp;
+	struct mdp_overlay_pp_params overlay_pp_cfg;
 };
 
 struct msmfb_overlay_3d {
@@ -374,32 +416,12 @@ struct mdp_pcc_cfg_data {
 	struct mdp_pcc_coeff r, g, b;
 };
 
-#define MDP_CSC_FLAG_ENABLE	0x1
-#define MDP_CSC_FLAG_YUV_IN	0x2
-#define MDP_CSC_FLAG_YUV_OUT	0x4
-
-struct mdp_csc_cfg {
-	/* flags for enable CSC, toggling RGB,YUV input/output */
-	uint32_t flags;
-	uint32_t csc_mv[9];
-	uint32_t csc_pre_bv[3];
-	uint32_t csc_post_bv[3];
-	uint32_t csc_pre_lv[6];
-	uint32_t csc_post_lv[6];
-};
-
-struct mdp_csc_cfg_data {
-	uint32_t block;
-	struct mdp_csc_cfg csc_data;
-};
-
 enum {
 	mdp_lut_igc,
 	mdp_lut_pgc,
 	mdp_lut_hist,
 	mdp_lut_max,
 };
-
 
 struct mdp_igc_lut_data {
 	uint32_t block;
@@ -433,7 +455,6 @@ struct mdp_hist_lut_data {
 	uint32_t *data;
 };
 
-
 struct mdp_lut_cfg_data {
 	uint32_t lut_type;
 	union {
@@ -443,20 +464,17 @@ struct mdp_lut_cfg_data {
 	} data;
 };
 
-struct mdp_qseed_cfg_data {
-	uint32_t block;
-	uint32_t table_num;
-	uint32_t ops;
-	uint32_t len;
-	uint32_t *data;
+struct mdp_bl_scale_data {
+	uint32_t min_lvl;
+	uint32_t scale;
 };
-
 
 enum {
 	mdp_op_pcc_cfg,
 	mdp_op_csc_cfg,
 	mdp_op_lut_cfg,
 	mdp_op_qseed_cfg,
+	mdp_bl_scale_cfg,
 	mdp_op_max,
 };
 
@@ -467,9 +485,33 @@ struct msmfb_mdp_pp {
 		struct mdp_csc_cfg_data csc_cfg_data;
 		struct mdp_lut_cfg_data lut_cfg_data;
 		struct mdp_qseed_cfg_data qseed_cfg_data;
+		struct mdp_bl_scale_data bl_scale_data;
 	} data;
 };
 
+#define MDP_MAX_FENCE_FD	10
+#define MDP_BUF_SYNC_FLAG_WAIT	1
+
+struct mdp_buf_sync {
+	uint32_t flags;
+	uint32_t acq_fen_fd_cnt;
+	int *acq_fen_fd;
+	int *rel_fen_fd;
+};
+
+struct mdp_buf_fence {
+	uint32_t flags;
+	uint32_t acq_fen_fd_cnt;
+	int acq_fen_fd[MDP_MAX_FENCE_FD];
+	int rel_fen_fd[MDP_MAX_FENCE_FD];
+};
+
+struct mdp_display_commit {
+	uint32_t flags;
+	uint32_t wait_for_finish;
+	struct fb_var_screeninfo var;
+	struct mdp_buf_fence buf_fence;
+};
 
 struct mdp_page_protection {
 	uint32_t page_protection;
