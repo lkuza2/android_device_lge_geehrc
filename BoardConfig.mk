@@ -100,6 +100,6 @@ TARGET_RELEASETOOLS_EXTENSIONS := device/lge/geehrc
 
 BOARD_HAVE_LOW_LATENCY_AUDIO := true
 
--include vendor/lge/mako/BoardConfigVendor.mk
+-include vendor/lge/geehrc/BoardConfigVendor.mk
 
 BOARD_HAS_NO_SELECT_BUTTON := true
