@@ -30,6 +30,8 @@ BOARD_KERNEL_PAGESIZE := 2048
 BOARD_KERNEL_CMDLINE := console=ttyHSL0,115200,n8 androidboot.hardware=geehrc lpj=67677
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x01600000
 
+TARGET_NO_HW_VSYNC := true
+
 # Try to build the kernel
 TARGET_KERNEL_CONFIG := geehrc_defconfig
 
@@ -46,6 +48,9 @@ TARGET_BOARD_PLATFORM := msm8960
 TARGET_BOOTLOADER_BOARD_NAME := GEE
 TARGET_BOOTLOADER_NAME=geehrc
 TARGET_BOARD_INFO_FILE := device/lge/geehrc/board-info.txt
+
+# HEADERS
+TARGET_SPECIFIC_HEADER_PATH := device/lge/geehrc/include
 
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/lge/geehrc/bluetooth
 
