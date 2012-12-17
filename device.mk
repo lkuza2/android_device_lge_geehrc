@@ -44,15 +44,15 @@ PRODUCT_PACKAGES += \
 
 # Ramdisk
 PRODUCT_COPY_FILES += \
-        device/lge/geehrc/ramdisk/init.geehrc.rc:root/init.geehrc.rc \
-        device/lge/geehrc/ramdisk/init.geehrc.bt.sh:root/init.geehrc.bt.sh \
-        device/lge/geehrc/ramdisk/init.geehrc.usb.rc:root/init.geehrc.usb.rc \
-        device/lge/geehrc/ramdisk/init.qcom.class_core.sh:root/init.qcom.class_core.sh \
-        device/lge/geehrc/ramdisk/init.qcom.class_main.sh:root/init.qcom.class_main.sh \
-        device/lge/geehrc/ramdisk/init.qcom.sh:root/init.qcom.sh \
-        device/lge/geehrc/ramdisk/init.qcom.usb.rc:root/init.qcom.usb.rc \
-        device/lge/geehrc/ramdisk/init.qcom.usb.sh:root/init.qcom.usb.sh \
-        device/lge/geehrc/ramdisk/ueventd.geehrc.rc:root/ueventd.geehrc.rc
+        device/lge/geehrc/init.geehrc.rc:root/init.geehrc.rc \
+        device/lge/geehrc/init.geehrc.bt.sh:root/init.geehrc.bt.sh \
+        device/lge/geehrc/init.geehrc.usb.rc:root/init.geehrc.usb.rc \
+        device/lge/geehrc/init.qcom.class_core.sh:root/init.qcom.class_core.sh \
+        device/lge/geehrc/init.qcom.class_main.sh:root/init.qcom.class_main.sh \
+        device/lge/geehrc/init.qcom.sh:root/init.qcom.sh \
+        device/lge/geehrc/init.qcom.usb.rc:root/init.qcom.usb.rc \
+        device/lge/geehrc/init.qcom.usb.sh:root/init.qcom.usb.sh \
+        device/lge/geehrc/ueventd.geehrc.rc:root/ueventd.geehrc.rc
 
 PRODUCT_COPY_FILES += \
 	device/lge/geehrc/WCNSS_cfg.dat:system/vendor/firmware/wlan/prima/WCNSS_cfg.dat \
