@@ -44,14 +44,14 @@
 /dev/alarm                0664   system     radio
 /dev/tty0                 0660   root       system
 /dev/sdio_tty_ciq_00      0660   system     system
-#/dev/graphics/*          0660   root       graphics
+/dev/graphics/*           0666   root       graphics
 #LGE_CHANGE_S : ART, ETA2 : root -> system
-/dev/graphics/*           0660   system     graphics  # LGE_CHANGE [blue.park@lge.com] <For Blue Error Handler>
+#/dev/graphics/*           0660   system     graphics  # LGE_CHANGE [blue.park@lge.com] <For Blue Error Handler>
 #LGE_CHANGE_E : ART, ETA2
 /dev/msm_hw3dm            0660   system     graphics
 /dev/msm_rotator          0660   system     graphics
 #LGE_CHANGE_S : ART, ETA2 : root -> system
-/dev/input/*              0660   system     input
+/dev/input/*              0660   root	    input
 #LGE_CHANGE_E : ART, ETA2
 /dev/eac                  0660   root       audio
 /dev/cam                  0660   root       camera

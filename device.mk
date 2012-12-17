@@ -42,6 +42,20 @@ PRODUCT_PACKAGES += \
         VisualizationWallpapers \
         librs_jni
 
+# Ramdisk
+PRODUCT_COPY_FILES += \
+        device/lge/geehrc/ramdisk/init.geehrc.rc:root/init.geehrc.rc \
+        device/lge/geehrc/ramdisk/init.qcom.usb.rc:root/init.qcom.usb.rc \
+        device/lge/geehrc/ramdisk/init.qcom.usb.sh:root/init.qcom.usb.sh \
+        device/lge/geehrc/ramdisk/init.target.rc:root/init.target.rc \
+        device/lge/geehrc/ramdisk/init.qcom.sh:root/init.qcom.sh \
+        device/lge/geehrc/ramdisk/init.lge.usb.rc:root/init.lge.usb.rc \
+        device/lge/geehrc/ramdisk/init.qcom.rc:root/init.qcom.rc \
+        device/lge/geehrc/ramdisk/ueventd.rc:root/ueventd.rc \
+	device/lge/geehrc/ramdisk/init.qcom.class_core.sh:root/init.qcom.class_core.sh \
+        device/lge/geehrc/ramdisk/init.qcom.class_main.sh:root/init.qcom.class_main.sh \
+	device/lge/geehrc/ramdisk/qcks-fix.sh:root/qcks-fix.sh
+
 PRODUCT_COPY_FILES += \
 	device/lge/geehrc/WCNSS_cfg.dat:system/vendor/firmware/wlan/prima/WCNSS_cfg.dat \
 	device/lge/geehrc/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
@@ -55,10 +69,7 @@ PRODUCT_COPY_FILES += \
 	device/lge/geehrc/thermald-geehrc.conf:system/etc/thermald.conf
 
 PRODUCT_COPY_FILES += \
-	device/lge/geehrc/init.geehrc.rc:root/init.geehrc.rc \
-	device/lge/geehrc/init.geehrc.usb.rc:root/init.geehrc.usb.rc \
 	device/lge/geehrc/fstab.geehrc:root/fstab.geehrc \
-	device/lge/geehrc/ueventd.geehrc.rc:root/ueventd.geehrc.rc \
 	device/lge/geehrc/media_profiles.xml:system/etc/media_profiles.xml \
 	device/lge/geehrc/media_codecs.xml:system/etc/media_codecs.xml
 
