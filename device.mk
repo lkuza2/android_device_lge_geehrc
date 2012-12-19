@@ -54,6 +54,12 @@ PRODUCT_COPY_FILES += \
         device/lge/geehrc/init.qcom.usb.sh:root/init.qcom.usb.sh \
         device/lge/geehrc/ueventd.geehrc.rc:root/ueventd.geehrc.rc
 
+# Recovery Files
+PRODUCT_COPY_FILES += \
+    device/htc/geehrc/recovery/sbin/thermald:recovery/root/sbin/thermald \
+    device/lge/geehrc/thermald-geehrc.conf:recovery/root/etc/thermald.conf \
+    device/htc/geehrc/recovery/sbin/mpdecision:recovery/root/sbin/mpdecision
+
 PRODUCT_COPY_FILES += \
 	device/lge/geehrc/WCNSS_cfg.dat:system/vendor/firmware/wlan/prima/WCNSS_cfg.dat \
 	device/lge/geehrc/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
