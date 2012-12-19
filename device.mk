@@ -56,9 +56,9 @@ PRODUCT_COPY_FILES += \
 
 # Recovery Files
 PRODUCT_COPY_FILES += \
-    device/htc/geehrc/recovery/sbin/thermald:recovery/root/sbin/thermald \
+    device/lge/geehrc/recovery/sbin/thermald:recovery/root/sbin/thermald \
     device/lge/geehrc/thermald-geehrc.conf:recovery/root/etc/thermald.conf \
-    device/htc/geehrc/recovery/sbin/mpdecision:recovery/root/sbin/mpdecision
+    device/lge/geehrc/recovery/sbin/mpdecision:recovery/root/sbin/mpdecision
 
 PRODUCT_COPY_FILES += \
 	device/lge/geehrc/WCNSS_cfg.dat:system/vendor/firmware/wlan/prima/WCNSS_cfg.dat \
