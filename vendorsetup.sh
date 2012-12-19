@@ -15,3 +15,4 @@
 #
 
 add_lunch_combo full_geehrc-userdebug
+add_lunch_combo full_geehrc-eng
