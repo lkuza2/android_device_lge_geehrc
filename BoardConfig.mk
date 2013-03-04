@@ -33,6 +33,7 @@ BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x1308000
 TARGET_NO_HW_VSYNC := true
 
 # Try to build the kernel
+TARGET_PREBUILT_KERNEL := device/lge/geehrc/kernel
 TARGET_KERNEL_CONFIG := geehrc_defconfig
 TARGET_KERNEL_SOURCE := kernel/lge/geehrc
 TARGET_KERNEL_CUSTOM_TOOLCHAIN := arm-eabi-4.4.3
